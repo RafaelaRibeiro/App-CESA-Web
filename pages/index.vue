@@ -188,6 +188,42 @@ export default {
         this.$toast.error(data.message)
       }
     },
+    async createServiceOrder() {
+      const { PAC_REG } = this.patient
+      const {
+        AGM_PAC,
+        SMK: { SMK_TIPO } = {},
+        SMK_COD,
+        AGM_HON_SEQ,
+        PSV_AGM_AGM_MEDToPSV: { PSV_COD } = {},
+        AGM_CNV_COD,
+        AGM_VALOR,
+        smmNum,
+      } = this.selectedItems ?? {}
+
+      await this.$axios
+        .post(`/serviceOrder/${PAC_REG}`, {
+          patient: AGM_PAC,
+          smmTpcood: SMK_TIPO,
+          smmCod: SMK_COD,
+          smmHonSeq: AGM_HON_SEQ,
+          smmMed: PSV_COD,
+          osmCnv: AGM_CNV_COD,
+          smmVlr: AGM_VALOR,
+          smmTab: 'PAR',
+          smmNum,
+        })
+        .then(() => {
+          this.$toast.success('Ordem de serviço gerada com sucesso', {
+            position: 'top-center',
+          })
+        })
+        .catch((error) => {
+          this.$toast.error('Erro ao atualizar os dados', {
+            position: 'top-center',
+          })
+        })
+    },
     updateSelectedItems(selected, appointment) {
       if (selected) {
         this.selectedItems.push(appointment)
