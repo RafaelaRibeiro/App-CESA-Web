@@ -89,7 +89,9 @@
         </div>
 
         <div class="flex justify-end p-3">
-          <v-btn dark color="#1A237E" class="mr-2">Confirmar</v-btn>
+          <v-btn dark color="#1A237E" @click="createServiceOrder" class="mr-2"
+            >Confirmar</v-btn
+          >
           <v-btn @click="patient = null" color="error">Voltar</v-btn>
         </div>
       </div>
