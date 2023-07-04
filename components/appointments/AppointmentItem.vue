@@ -10,13 +10,13 @@
           <div class="label-text mb-1">
             <span class="font-semibold text-gray-700">Procedimento:</span>
             <span class="sm:text-[14px] md:text-[16px]">
-              {{ appointment.SMK.SMK_NOME }}
+              {{ appointment.SMK_NOME }}
             </span>
           </div>
           <div class="label-text mb-1">
             <span class="font-semibold text-gray-700">Médico:</span>
             <span class="sm:text-[14px] md:text-[16px]">
-              {{ appointment.PSV_AGM_AGM_MEDToPSV.PSV_NOME }}
+              {{ appointment.PSV_NOME }}
             </span>
           </div>
           <div class="label-text">

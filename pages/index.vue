@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col justify-center items-center m-0">
+    <loading :isLoading="isLoading" class="z-50" />
     <div>
       <img
         src="~/assets/logo vertical_page-0001.jpg"
@@ -96,26 +97,53 @@
         </div>
       </div>
     </v-dialog>
+    <v-dialog v-model="showModal" max-width="500px ">
+      <!-- Conteúdo do modal -->
+      <div class="flex items-center justify-center">
+        <div class="flex flex-col items-center bg-white rounded p-6">
+          <!-- Ícone do Material Design Icons -->
+          <span class="text-7xl text-green-500 mb-4"
+            ><i class="mdi mdi-check-circle-outline"></i
+          ></span>
+          <h2 class="text-xl font-bold text-gray-700 mb-2">
+            A ordem de serviço foi criada com sucesso.
+          </h2>
+          <p class="text-gray-700 text-center">
+            Aguarde na sala de espera que você já será atendido.
+          </p>
+          <div class="w-full bg-gray-200 rounded h-2 mt-4">
+            <div
+              class="bg-green-500 rounded h-2"
+              :class="{ 'animate-progress': showModal }"
+            ></div>
+          </div>
+        </div>
+      </div>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import Keyboard from '~/components/Keyboard.vue'
 import AppointmentItem from '../components/appointments/AppointmentItem.vue'
+import Loading from '~/components/Loading.vue'
 
 export default {
   components: {
     Keyboard,
     AppointmentItem,
+    Loading,
   },
   data() {
     return {
+      isLoading: false,
       myNumber: '',
       patients: [],
       patient: null,
       appointments: [],
       selectedItems: [],
       dialog: false,
+      showModal: false,
       dialogError: false,
       headers: [
         {
@@ -177,6 +205,7 @@ export default {
 
     async getPatients() {
       try {
+        this.isLoading = true
         const patients = await this.$axios.get('/patients', {
           params: {
             search: this.myNumber,
@@ -187,45 +216,58 @@ export default {
         this.dialog = true
       } catch (error) {
         const { data } = error.response
-        this.$toast.error(data.message)
+        this.$toast.error('Erro na busca dos dados', {
+          position: 'top-center',
+        })
+        console.log(data.message)
+      } finally {
+        this.isLoading = false // Oculta o componente de carregamento
       }
     },
     async createServiceOrder() {
-      const { PAC_REG } = this.patient
-      const {
-        AGM_PAC,
-        SMK: { SMK_TIPO } = {},
-        SMK_COD,
-        AGM_HON_SEQ,
-        PSV_AGM_AGM_MEDToPSV: { PSV_COD } = {},
-        AGM_CNV_COD,
-        AGM_VALOR,
-        smmNum,
-      } = this.selectedItems ?? {}
+      if (this.selectedItems.length === 0) {
+        // Caso nenhum item tenha sido selecionado
+        this.$toast.error('Nenhum item selecionado', {
+          position: 'top-center',
+        })
+        return
+      }
+      this.dialog = false
+
+      this.isLoading = true
+
+      const orders = this.selectedItems.map((item, index) => ({
+        pac_reg: item.AGM_PAC,
+        smmTpcod: item.AGM_TPSMK,
+        smmCod: item.AGM_SMK,
+        smmHonSeq: item.AGM_HON_SEQ,
+        osmCnv: item.AGM_CNV_COD,
+        smmVlr: item.AGM_VALOR,
+        smmMed: item.AGM_MED,
+        smmTab: item.CNV_TAB,
+        smmNum: index + 1,
+        agmHini: item.AGM_HINI,
+      }))
 
       await this.$axios
-        .post(`/serviceOrder/${PAC_REG}`, {
-          patient: AGM_PAC,
-          smmTpcood: SMK_TIPO,
-          smmCod: SMK_COD,
-          smmHonSeq: AGM_HON_SEQ,
-          smmMed: PSV_COD,
-          osmCnv: AGM_CNV_COD,
-          smmVlr: AGM_VALOR,
-          smmTab: 'PAR',
-          smmNum,
-        })
+        .post('/serviceOrder/create', orders)
         .then(() => {
-          this.$toast.success('Ordem de serviço gerada com sucesso', {
-            position: 'top-center',
-          })
+          this.selectedItems = []
+          this.patient = null
+          this.myNumber = ''
+          this.exibirModal()
         })
         .catch((error) => {
-          this.$toast.error('Erro ao atualizar os dados', {
+          this.$toast.error('Erro ao criar a ordem de serviço', {
             position: 'top-center',
           })
+          console.log(error)
+        })
+        .finally(() => {
+          this.isLoading = false // Oculta o componente de carregamento
         })
     },
+
     updateSelectedItems(selected, appointment) {
       if (selected) {
         this.selectedItems.push(appointment)
@@ -238,8 +280,36 @@ export default {
         }
       }
     },
+
+    exibirModal() {
+      this.showModal = true
+
+      setTimeout(() => {
+        this.showModal = false
+      }, 7000) // Fechar o modal após 5 segundos (5000 milissegundos)
+    },
   },
 }
 </script>
 
-<style scoped></style>
+<style>
+@keyframes progressAnimation {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.animate-progress {
+  animation-name: progressAnimation;
+  animation-duration: 7s; /* Duração da animação (mesmo valor utilizado no setTimeout) */
+  animation-timing-function: linear;
+}
+
+.v-dialog__content {
+  align-items: start !important;
+  margin-top: 20vh;
+}
+</style>
