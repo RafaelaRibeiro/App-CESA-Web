@@ -1,12 +1,12 @@
 <template>
   <v-app dark>
-    <div>
+    <div
+      class="h-screen w-full bg-[url('~/assets/Fundo.png')] bg-cover bg-center"
+    >
       <!-- class="h-screen w-full bg-[url('~/assets/Fundo.png')] bg-cover bg-center" -->
-      <v-main>
-        <v-container pa-0>
-          <Nuxt />
-        </v-container>
-      </v-main>
+      <main class="h-full">
+        <Nuxt />
+      </main>
     </div>
 
     <!-- <v-footer :absolute="!fixed" app>

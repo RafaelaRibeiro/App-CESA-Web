@@ -6,7 +6,8 @@
       :key="index"
     >
       <v-btn
-        color="primary"
+        large
+        color="white"
         v-bind="size"
         v-for="key in row"
         :key="key"
@@ -14,16 +15,16 @@
         :class="{ space: key === 'Space', key: key !== 'Space' }"
         class="sm:m-0.5 md:m-1 w-12"
       >
-        <span v-if="key === 'Caps Lock'"
-          ><v-icon>mdi-keyboard-caps</v-icon></span
+        <span class="text-[#1A237E]" v-if="key === 'Caps Lock'"
+          ><v-icon large>mdi-keyboard-caps</v-icon></span
         >
-        <span v-else-if="key === 'Backspace'"
-          ><v-icon>mdi-backspace</v-icon></span
+        <span class="text-[#1A237E]" v-else-if="key === 'Backspace'"
+          ><v-icon large>mdi-backspace</v-icon></span
         >
-        <span v-else-if="key === 'Space'"
-          ><v-icon>mdi-keyboard-space</v-icon></span
+        <span class="text-[#1A237E]" v-else-if="key === 'Space'"
+          ><v-icon large>mdi-keyboard-space</v-icon></span
         >
-        <span v-else>{{ key }}</span>
+        <span class="text-[#1A237E] text-2xl font-bold" v-else>{{ key }}</span>
       </v-btn>
     </div>
   </div>

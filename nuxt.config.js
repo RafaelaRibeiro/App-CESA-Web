@@ -14,7 +14,23 @@ export default {
       { hid: 'description', name: 'description', content: '' },
       { name: 'format-detection', content: 'telephone=no' },
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css?family=Poppins:100,300,400,500,700,900',
+      },
+    ],
+  },
+  target: 'static',
+
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+  },
+
+  router: {
+    middleware: ['auth'],
   },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
@@ -32,10 +48,40 @@ export default {
     '@nuxtjs/vuetify',
   ],
 
-  // Modules: https://go.nuxtjs.dev/config-modules
+  auth: {
+    watchLoggedIn: true,
+    strategies: {
+      local: {
+        token: {
+          property: 'token.token',
+          global: true,
+          // Usar o localStorage como padrão de armazenamento do token
+        },
+
+        user: {
+          property: 'user',
+          //autoFetch: true,
+        },
+
+        endpoints: {
+          login: { url: '/auth/login', method: 'post' },
+          logout: false,
+          user: { url: '/auth/user', method: 'get' },
+        },
+      },
+    },
+
+    redirect: {
+      login: '/login',
+      logout: '/',
+      callback: '/login',
+      home: false,
+    },
+  },
+
   modules: [
-    // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
     [
       'vue-toastification/nuxt',
       {
@@ -75,6 +121,7 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    transpile: ['defu'],
     postcss: {
       postcssOptions: {
         plugins: {

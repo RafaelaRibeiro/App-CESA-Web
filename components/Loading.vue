@@ -3,11 +3,11 @@
     v-if="isLoading"
     class="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-gray-900"
   >
-    <div class="flex flex-col items-center space-x-2 text-white">
+    <div class="flex flex-col items-center space-x-2">
       <div
-        class="loader animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"
+        class="loader animate-spin rounded-full h-8 w-8 border-t-2 border-b-2"
       ></div>
-      <span class="text-3xl">Carregando...</span>
+      <span class="text-2xl">Carregando...</span>
     </div>
   </div>
 </template>
